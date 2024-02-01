@@ -1,57 +1,46 @@
-import boto3
 import os
+import boto3
+from botocore.exceptions import NoCredentialsError
 from pathlib import Path
-
 
 DATA_DIR = os.environ.get("DATA_DIR", "data")
 LANDING_PREFIX = os.environ.get("LANDING_PREFIX", "landing")
+RAW_PREFIX = os.environ.get("RAW_PREFIX", "raw")
 S3_BUCKET = os.environ.get("S3_BUCKET_NAME")
 S3_REGION = os.environ.get("S3_BUCKET_REGION", "us-east-1")
 FILE_TYPE = ".csv"
 
 
-def construct_local_path(s3_key, local_root_dir):
-    """
-    Constructs a local file path from the S3 key.
-    """
-    local_path = Path(local_root_dir) / Path(s3_key)
-    local_path.parent.mkdir(parents=True, exist_ok=True)
-    return local_path
-
-
-class S3BucketDownloader:
-    def __init__(self, bucket_name, prefix, file_format):
-        self.bucket_name = bucket_name
-        self.prefix = prefix
+class S3Uploader:
+    def __init__(self, input_dir, bucket, prefix, file_format):
+        self.input_dir = input_dir
+        self.bucket = bucket
+        self.prefix = prefix.strip("/")
         self.file_format = file_format
-        self.s3 = boto3.client("s3")
+        self.s3 = boto3.client("s3", region_name=S3_REGION)
 
-    def list_files(self):
-        """
-        List all files in the bucket with the specified prefix and file format.
-        """
-        response = self.s3.list_objects_v2(Bucket=self.bucket_name, Prefix=self.prefix)
-        all_files = response.get("Contents", [])
-        return [
-            file["Key"] for file in all_files if file["Key"].endswith(self.file_format)
-        ]
+    def upload_files(self):
+        for root, dirs, files in os.walk(self.input_dir):
+            for file in files:
+                if file.endswith(self.file_format):
+                    local_path = os.path.join(root, file)
+                    relative_path = os.path.relpath(local_path, self.input_dir)
+                    s3_path = f"{self.prefix}/{relative_path}".replace("\\", "/")
 
-    def download_files(self, download_path):
-        """
-        Download files from the S3 bucket, preserving the directory structure.
-        """
-        files = self.list_files()
-        for file_key in files:
-            local_file_path = construct_local_path(file_key, download_path)
-            self.s3.download_file(self.bucket_name, file_key, str(local_file_path))
-        print(f"Downloaded {len(files)} files to {download_path}")
+                    try:
+                        self.s3.upload_file(local_path, self.bucket, s3_path)
+                        print(f"Uploaded {local_path} to s3://{self.bucket}/{s3_path}")
+                    except NoCredentialsError:
+                        print("Credentials not available")
+                        return
 
 
 def main():
-    local_landing_dir = Path(DATA_DIR) / LANDING_PREFIX
-    local_landing_dir.mkdir(parents=True, exist_ok=True)
-    downloader = S3BucketDownloader(S3_BUCKET, LANDING_PREFIX, ".csv")
-    downloader.download_files(DATA_DIR)
+    local_raw = Path(DATA_DIR) / RAW_PREFIX
+    uploader = S3Uploader(
+        local_raw, bucket=S3_BUCKET, prefix=RAW_PREFIX, file_format=FILE_TYPE
+    )
+    uploader.upload_files()
 
 
 if __name__ == "__main__":
