@@ -1,0 +1,5 @@
+.env
+data
+*.egg*
+__pycache__
+.ruff*
