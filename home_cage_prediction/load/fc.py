@@ -1,18 +1,18 @@
 from pathlib import Path
 import pandas as pd
 
-META_FILENAMES = {"mice": "mice.csv"}
+META_FILENAMES = {"mice": "fc_mice.csv"}
 FREEZE_FILENAMES = {
-    "all": "freeze_behavior.csv",
-    "ext_ret": "freeze_ext_ret.csv",
-    "extinction": "freeze_extinction.csv",
-    "cond": "freeze_fear_conditioning.csv",
-    "renewal": "freeze_renewal.csv",
+    "all": "fc_freeze_behavior.csv",
+    "ext_ret": "fc_freeze_ext_ret.csv",
+    "extinction": "fc_freeze_extinction.csv",
+    "cond": "fc_freeze_fear_conditioning.csv",
+    "renewal": "fc_freeze_renewal.csv",
 }
 HOME_CAGE_FILENAMES = {
-    "pre-cond": "hc_pre_conditioning.csv",
-    "post-cond": "hc_post_conditioning.csv",
-    "post-ext": "hc_post_extinction.csv",
+    "pre-cond": "fc_hc_pre_conditioning.csv",
+    "post-cond": "fc_hc_post_conditioning.csv",
+    "post-ext": "fc_hc_post_extinction.csv",
 }
 
 
