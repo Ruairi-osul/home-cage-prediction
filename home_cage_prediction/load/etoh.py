@@ -8,6 +8,7 @@ FILENAMES = {
     "hc-week-1": "etoh_hc_week1.csv",
     "hc-week-2": "etoh_hc_week2.csv",
     "hc-week-3": "etoh_hc_week3.csv",
+    "escalation": "etoh_esc.csv"
 }
 
 def load_mice(data_dir: Path) -> pd.DataFrame:
@@ -41,6 +42,20 @@ def load_etoh_data(data_dir: Path) -> pd.DataFrame:
     df = pd.read_csv(file_path)
     return df
 
+def load_escalation_data(data_dir: Path) -> pd.DataFrame:
+    """
+    Load escalation data.
+    
+    Args:
+        data_dir (Path): Path to the raw data directory.
+        
+    Returns:
+        pd.DataFrame: The escalation data.
+    """
+    filename = FILENAMES["escalation"]
+    file_path = data_dir / filename
+    df = pd.read_csv(file_path)
+    return df
 
 def load_home_cage_data(data_dir: Path, week: str) -> pd.DataFrame:
     """
