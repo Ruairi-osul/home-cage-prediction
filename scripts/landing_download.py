@@ -7,7 +7,6 @@ DATA_DIR = os.environ.get("DATA_DIR", "data")
 LANDING_PREFIX = os.environ.get("LANDING_PREFIX", "landing")
 S3_BUCKET = os.environ.get("S3_BUCKET_NAME")
 S3_REGION = os.environ.get("S3_BUCKET_REGION", "us-east-1")
-FILE_TYPE = ".csv"
 
 
 def construct_local_path(s3_key, local_root_dir):
@@ -50,8 +49,11 @@ class S3BucketDownloader:
 def main():
     local_landing_dir = Path(DATA_DIR) / LANDING_PREFIX
     local_landing_dir.mkdir(parents=True, exist_ok=True)
-    downloader = S3BucketDownloader(S3_BUCKET, LANDING_PREFIX, ".xlsx")
-    downloader.download_files(DATA_DIR)
+    downloader_xlsx = S3BucketDownloader(S3_BUCKET, LANDING_PREFIX, ".xlsx")
+    downloader_xlsx.download_files(DATA_DIR)
+
+    downloader_csv = S3BucketDownloader(S3_BUCKET, LANDING_PREFIX, ".csv")
+    downloader_csv.download_files(DATA_DIR)
 
 
 if __name__ == "__main__":
