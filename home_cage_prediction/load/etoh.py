@@ -4,7 +4,7 @@ import pandas as pd
 META_FILENAMES = {"mice": "etoh_mice.csv"}
 FILENAMES = {
     "etoh": "etoh_behavior.csv",
-    "hc-base": "etoh_hc_baseline.csv",
+    "hc-base": "etoh_hc_base.csv",
     "hc-week-1": "etoh_hc_week1.csv",
     "hc-week-2": "etoh_hc_week2.csv",
     "hc-week-3": "etoh_hc_week3.csv",
